@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="data_sources.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
+
+    <title>openPDS</title>
+</head>
+<script>
+    getAllDataSources();
+    $(document).ready(function () {
+        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+        $('.modal-trigger').leanModal({
+                    in_duration: 100,
+                    out_duration: 80
+                }
+        );
+    });
+
+</script>
+
+<script id="dataSourcesList" type="text/template">
+    <ul class="collection">
+        {{#dataSources}}
+        <li class="collection-item avatar">
+            <span class="title">{{name}}</span>
+            <p>Dropbox folder: {{dropboxFileLocation}}</p>
+        </li>
+        {{/dataSources}}
+    </ul>
+
+</script>
+<body>
+
+<nav class="red" role="navigation">
+    <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo">openPDS</a>
+        <ul class="right hide-on-med-and-down">
+            <li><a href="#">Answer modules</a></li>
+            <li><a href="#">Data sources</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+        <br><br>
+
+        <h1 class="header center red-text">Data sources</h1>
+
+
+        <div id="dataSourcesContainer">
+
+        </div>
+        <button data-target="addDataSourceModal" class="btn-large waves-effect waves-light red modal-trigger">Install
+            new...
+        </button>
+        <div id="addDataSourceModal" class="modal">
+            <div class="modal-content">
+                <h4>Add new data source</h4>
+                <form id="newDataSourceForm">
+
+
+                    <h5>Install local source</h5>
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>File</span>
+                            <input id="testPath" type="file" nwfile>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Select data source config directory">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" onclick="submitDataSourceForm()">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br><br>
+
+    </div>
+</div>
+</body>
+</html>
