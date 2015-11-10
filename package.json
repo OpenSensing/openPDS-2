@@ -3,8 +3,13 @@
   "version": "0.0.1",
   "main": "data_sources.html",
   "node-main": "main.js",
-
   "window": {
     "toolbar": true
+  },
+
+  "dependencies": {
+    "hogan": "1.x.x",
+    "persistencejs": "0.3.x",
+    "sqlite3": "3.x.x"
   }
 }
