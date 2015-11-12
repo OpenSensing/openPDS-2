@@ -1,11 +1,10 @@
-var fs = require('fs');;
-var db = require('./db.js');
+var fs = require('fs');
 var hogan = require('hogan');
+var sqlite = require('sqlite3');
 
 function submitDataSourceForm() {
 
     var configPath = document.getElementById('testPath');
-    console.log(configPath.value);
 
     installDataSource(configPath.value);
     $('#newDataSourceForm').submit();
@@ -16,25 +15,41 @@ function installDataSource(manifestPath) {
     var manifestJSON = fs.readFileSync(manifestPath, 'utf-8');
     var manifest = JSON.parse(manifestJSON);
 
-    var dataSource = new db.models.DataSource();
+    manifest.dataTypes.forEach(function(dataType) {
+        var cache_db_name = manifest.name + "_" + dataType.name + ".db";
+        createDataTypeDB(cache_db_name, dataType.name,  dataType.schema);
+        dataType.cache_db_name = cache_db_name;
+    });
 
-    dataSource.name = manifest.name;
-    dataSource.parserPath = manifest.parserPath;
-    dataSource.dropboxFileLocation = manifest.dropboxFileLocation;
+    process.mainModule.exports.db.insert(manifest, function(err, newDoc) {
 
-    console.log(dataSource.name);
+    });
+}
 
-    db.session.add(dataSource);
-    db.session.flush();
+function createDataTypeDB(db_name, table_name, schema) {
+    var db = new sqlite.Database(db_name);
+    db.serialize(function() {
+        var createDataTypeTableStatement = "CREATE TABLE IF NOT EXISTS " + table_name + " (" + createSQLStringFromSchema(schema) + ")";
+        console.log(createDataTypeTableStatement);
+        db.run(createDataTypeTableStatement)
+    });
 
-    console.log(db.models.DataSource.all().forEach(function(data_source) {
-        console.log(data_source.name);
-    }))
+    db.close()
+}
 
+function createSQLStringFromSchema(schema) {
+    var columnTypes = [];
+
+    for (property in schema) {
+        columnTypes.push(property + " " + schema[property])
+    }
+
+    console.log(columnTypes.join());
+    return columnTypes.join()
 }
 
 function getAllDataSources() {
-    db.models.DataSource.all(db.session).list(null, function(results) {
+    process.mainModule.exports.db.find({}, function (err, results) {
         var template = $('#dataSourcesList').html();
         var html = hogan.compile(template).render({dataSources: results});
         $('#dataSourcesContainer').html(html);

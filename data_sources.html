@@ -10,8 +10,9 @@
     <title>openPDS</title>
 </head>
 <script>
-    getAllDataSources();
+
     $(document).ready(function () {
+        getAllDataSources();
         // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
         $('.modal-trigger').leanModal({
                     in_duration: 100,
@@ -28,6 +29,10 @@
         <li class="collection-item avatar">
             <span class="title">{{name}}</span>
             <p>Dropbox folder: {{dropboxFileLocation}}</p>
+            <strong>Data types: </strong>
+            {{#dataTypes}}
+                {{name}}
+            {{/dataTypes}}
         </li>
         {{/dataSources}}
     </ul>

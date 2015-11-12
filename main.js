@@ -1,29 +1,16 @@
 var path = './';
 var fs = require('fs');
+var CronJob = require('cron').CronJob;
+var utils = require('./utils.js');
 
-fs.watch(path, function () {
-    if (location)
-        location.reload();
-});
+//fs.watch(path, function () {
+//    if (location)
+//        location.reload();
+//});
 
-var persistence = require("persistencejs");
-//var persistenceStore = require("persistencejs/lib/persistence.store.sqlite3");
-var persistenceStore = persistence.StoreConfig.init(persistence, { adaptor: 'sqlite3' });
+var Datastore = require('nedb')
+    , db = new Datastore({ filename: 'openPDS.db', autoload: true });
 
-persistenceStore.config(persistence, 'openPDS.db');
+exports.db = db;
 
-var session = persistenceStore.getSession();
 
-var DataSource = persistence.define('DataSource', {
-    name: "TEXT",
-    parserPath: "TEXT",
-    dropboxFileLocation: "TEXT"
-});
-
-var DataType = persistence.define("DataType", {
-    name: "TEXT"
-});
-
-DataSource.hasMany('dataTypes', DataType, "dataSource");
-
-session.schemaSync();

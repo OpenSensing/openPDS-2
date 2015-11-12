@@ -10,6 +10,8 @@
   "dependencies": {
     "hogan": "1.x.x",
     "persistencejs": "0.3.x",
-    "sqlite3": "3.x.x"
+    "sqlite3": "3.x.x",
+    "nedb": "1.4.x",
+    "cron": "1.x.x"
   }
 }
