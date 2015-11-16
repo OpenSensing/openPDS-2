@@ -124,7 +124,7 @@ function processRawDataSource(dataSource) {
         files: filesToProcess,
         dbs: dataTypeDBs,
         files_root: dataSource.dropboxFileLocation,
-        db_root: path.join(config.dataPath, 'dataSources', dataSource.name)
+        dbs_root: path.join(config.dataPath, 'dataSources', dataSource.name)
     }), function (code) {
         if (code.toString() == '0') {
             process.mainModule.exports.db.dataSources.update({_id: dataSource._id}, {$set: {lastProcessingDate: lastProcessingDate}}, {});
