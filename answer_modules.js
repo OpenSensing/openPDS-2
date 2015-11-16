@@ -61,7 +61,7 @@ function agreedCallback() {
     var localAnswerModulePath = path.join(config.dataPath, 'answerModules', manifest.name);
 
     fs.mkdirsSync(localAnswerModulePath);
-    fs.copySync(path.join(path.dirname(configPath.value), manifest.parserPath), path.join(localAnswerModulePath, manifest.parserPath));
+    fs.copySync(path.join(path.dirname(configPath.value), manifest.scriptPath), path.join(localAnswerModulePath, manifest.scriptPath));
 
     //fs.mkdirsSync(path.join(config.dropboxRoot, manifest.dropboxDirectory));
 
@@ -104,10 +104,10 @@ function runAnswerModule(answerModuleName) {
             params.dbs = rawDataDBs;
 
 
-            //utils.spawnPython(path.join(config.dataPath, 'answerModules', answerModuleName, doc.parserPath), JSON.stringify(params),
-            //function (code) {
+            utils.spawnPython(path.join(config.dataPath, 'answerModules', answerModuleName, doc.scriptPath), JSON.stringify(params),
+            function (code) {
 
-            //});
+            });
         });
 
     });
