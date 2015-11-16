@@ -105,8 +105,7 @@ function processRawDataSource(dataSource) {
     if (!lastProcessingDate) {
         lastProcessingDate = new Date(0);
     }
-    console.log(dataSource.name);
-    console.log(dataSource.dropboxFileLocation);
+
     var filesToProcess = utils.getFilesAfterDate(dataSource.dropboxFileLocation, lastProcessingDate);
 
     if (filesToProcess.length === 0) {
@@ -121,7 +120,7 @@ function processRawDataSource(dataSource) {
 
     lastProcessingDate = new Date();
 
-    utils.spawnPython(dataSource.parserPath, JSON.stringify({
+    utils.spawnPython(path.join(config.dataPath, 'dataSources', dataSource.name, dataSource.parserPath), JSON.stringify({
         files: filesToProcess,
         dbs: dataTypeDBs,
         files_root: dataSource.dropboxFileLocation,
