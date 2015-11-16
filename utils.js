@@ -1,6 +1,7 @@
 var fs = require('fs');
+var path = require('path');
 
-exports.spawnPython = function (script_path, params) {
+exports.spawnPython = function (script_path, params, callback) {
     var spawn = require("child_process").spawn;
     var process = spawn('python',[script_path, params]);
 
@@ -11,6 +12,13 @@ exports.spawnPython = function (script_path, params) {
     process.stderr.on('data', function (data) {
         console.log('stderr: ' + data);
     });
+
+    process.on('exit', function(code) {
+        console.log(script_path + " exited with code: " + code);
+        if(callback != undefined) {
+            callback(code);
+        }
+    })
 };
 
 exports.getFilesAfterDate = function (dir, date) {
@@ -18,7 +26,7 @@ exports.getFilesAfterDate = function (dir, date) {
 
     return files.filter(function(file) {
 
-        return fs.statSync(dir + file).mtime.getTime() > date && file[0] != ".";
+        return fs.statSync(path.join(dir, file)).mtime.getTime() > date && file[0] != ".";
     })
 };
 
