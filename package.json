@@ -4,7 +4,9 @@
   "main": "index.html",
   "node-main": "main.js",
   "window": {
-    "toolbar": true
+    "toolbar": false,
+    "width": 650,
+    "height": 600
   },
 
   "dependencies": {
