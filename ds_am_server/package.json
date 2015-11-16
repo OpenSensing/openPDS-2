@@ -1,0 +1,15 @@
+{
+  "name": "openpds-ds-am-server",
+  "version": "0.0.1",
+  "private": "true",
+  "dependencies": {
+    "express": "^4.13.3"
+  },
+  "description": "Little server for listing and sending openPDS-2 data sources and answer moduls",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mieszko Piotr Manijak",
+  "license": "MIT"
+}
