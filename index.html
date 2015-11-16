@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="answer_modules.js"></script>
+    <script src="data_sources.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
+
+    <title>openPDS</title>
+</head>
+<script>
+
+    $(document).ready(function () {
+        getAllAnswerModules();
+        getAllDataSources();
+        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+
+
+        $('.modal-trigger').leanModal({
+                    in_duration: 100,
+                    out_duration: 80,
+                    dismissible: true
+
+                }
+        );
+    });
+
+</script>
+
+<script id="answerModulesList" type="text/template">
+    <ul class="collapsible">
+        {{#answerModules}}
+        <li>
+            <div class="collapsible-header">
+            <i class="material-icons circle">perm_identity</i>
+            <span class="title">{{name}}</span>
+
+             - <strong>Uses: </strong>
+
+                {{#requiredDataTypes}}
+                    {{.}}
+                {{/requiredDataTypes}}
+
+            </div>
+            <div class="collapsible-body">
+
+                <p>
+                Description: here be description
+                <br/>
+                Dropbox folder: {{dropboxDirectory}}
+                    <br/>
+                    <br/>
+                    <a href="#"  class='waves-effect waves-light btn' onclick="runAnswerModule('{{name}}');">
+                    <i class="material-icons left">play_arrow</i>
+                        Run module
+                </a>
+                </p>
+            </div>
+        </li>
+        {{/answerModules}}
+    </ul>
+</script>
+
+
+<script id="answerModuleConsent" type="text/template">
+    <h4>{{name}} wants to access: </h4>
+    {{#requiredDataTypes}}
+    <p><strong>{{name}}</strong> - {{description}}</p>
+    {{/requiredDataTypes}}
+</script>
+
+<script id="dataSourcesList" type="text/template">
+    <ul class="collapsible">
+        {{#dataSources}}
+        <li>
+            <div class="collapsible-header">
+                <span class="title">{{name}}</span>
+
+
+            </div>
+            <div class="collapsible-body">
+
+                <p>
+                    <strong>Data types: </strong>
+                    {{#dataTypes}}
+                    {{name}}
+                    {{/dataTypes}}
+                    <br/>
+                    <strong>Description</strong>: {{description}}
+                    <br/>
+                    <strong>Dropbox folder</strong>: {{dropboxFileLocation}}
+                    <br/>
+                    <br/>
+                    <a href="#" class="waves-effect waves-light btn" onclick="processRawDataSourceByName('{{name}}');">
+                        Parse raw files
+                    </a>
+                </p>
+            </div>
+        </li>
+        {{/dataSources}}
+    </ul>
+
+</script>
+
+
+<body>
+
+<nav class="red" role="navigation">
+    <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo">openPDS</a>
+    </div>
+</nav>
+<ul class="tabs">
+    <li class="tab col s3 "><a href="#answerModules" class="active red-text">Answer modules</a></li>
+    <li class="tab col s3"><a href="#dataSources" class="red-text">Data sources</a></li>
+</ul>
+
+<div class="section no-pad-bot" id="index-banner">
+    <div id="dataSources" class="container">
+        <br><br>
+
+        <h3 class="header center red-text">Data sources</h3>
+
+
+        <div id="dataSourcesContainer">
+
+        </div>
+        <button data-target="addDataSourceModal" class="btn-large waves-effect waves-light red modal-trigger">Install
+            new...
+        </button>
+        <div id="addDataSourceModal" class="modal">
+            <div class="modal-content">
+                <h4>Add new data source</h4>
+
+                <form id="newDataSourceForm">
+
+
+                    <h5>Install local source</h5>
+
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>File</span>
+                            <input id="testPath" type="file" nwfile>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text"
+                                   placeholder="Select data source config directory">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" href="#!"
+                                class="modal-action modal-close waves-effect waves-green btn-flat"
+                                onclick="submitDataSourceForm()">Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br><br>
+
+    </div>
+    <div id="answerModules" class="container">
+        <br><br>
+
+        <h3 class="header center red-text">Answer modules</h3>
+
+
+        <div id="answerModulesContainer">
+
+        </div>
+        <button data-target="addAnswerModuleModal" class="btn-large waves-effect waves-light red modal-trigger">Install
+            new...
+        </button>
+
+        <div id="answerModuleConsentModal" class="modal">
+            <div id="answerModuleConsentContent" class="modal-content">
+                <h4>Answer module wants to: </h4>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" href="answer_modules.html" class=" modal-action modal-close waves-effect waves-green btn-flat" onclick="$('.lean-overlay').remove();agreedCallback();">Agree</button>
+                <button type="button" href="#" class=" modal-action modal-close waves-effect waves-green btn-flat" onclick="$('.lean-overlay').remove();">Disagree</button>
+            </div>
+        </div>
+
+        <div id="addAnswerModuleModal" class="modal">
+            <div class="modal-content">
+                <h4>Add new answer module</h4>
+                <form id="newAnswerModuleForm">
+
+
+                    <h5>Install local module</h5>
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>File</span>
+                            <input id="configPath" type="file" nwfile>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Select data source config directory">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" href="#" class="modal-action modal-close waves-effect waves-green btn-flat modal-trigger" onclick="submitAnswerModuleForm();">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br><br>
+
+    </div>
+</div>
+</body>
+</html>

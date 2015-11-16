@@ -1,7 +1,7 @@
 {
   "name": "openPDS",
   "version": "0.0.1",
-  "main": "data_sources.html",
+  "main": "index.html",
   "node-main": "main.js",
   "window": {
     "toolbar": true

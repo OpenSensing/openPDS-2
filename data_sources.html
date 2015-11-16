@@ -24,15 +24,29 @@
 </script>
 
 <script id="dataSourcesList" type="text/template">
-    <ul class="collection">
+    <ul class="collapsible">
         {{#dataSources}}
-        <li class="collection-item avatar">
-            <span class="title">{{name}}</span>
-            <p>Dropbox folder: {{dropboxFileLocation}}</p>
-            <strong>Data types: </strong>
-            {{#dataTypes}}
-                {{name}}
-            {{/dataTypes}}
+        <li>
+            <div class="collapsible-header">
+                <span class="title">{{name}}</span>
+                <a href="#" class="secondary-content" onclick="processRawDataSourceByName('{{name}}');">
+                    <i class="material-icons">play_arrow</i>
+                </a>
+
+            </div>
+            <div class="collapsible-body">
+
+                <p>
+                    <strong>Data types: </strong>
+                    {{#dataTypes}}
+                    {{name}}
+                    {{/dataTypes}}
+                    <br/>
+                    <strong>Description</strong>: {{description}}
+                    <br/>
+                    <strong>Dropbox folder</strong>: {{dropboxFileLocation}}
+                </p>
+            </div>
         </li>
         {{/dataSources}}
     </ul>
@@ -43,17 +57,17 @@
 <nav class="red" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="#" class="brand-logo">openPDS</a>
-        <ul class="right hide-on-med-and-down">
-            <li><a href="#">Answer modules</a></li>
-            <li><a href="#">Data sources</a></li>
-        </ul>
     </div>
 </nav>
+<ul class="tabs">
+    <li class="tab col s3 "><a href="#test1" class="active red-text">Answer modules</a></li>
+    <li class="tab col s3"><a href="#test2" class="red-text">Data sources</a></li>
+</ul>
 <div class="section no-pad-bot" id="index-banner">
     <div class="container">
         <br><br>
 
-        <h1 class="header center red-text">Data sources</h1>
+        <h3 class="header center red-text">Data sources</h3>
 
 
         <div id="dataSourcesContainer">
@@ -65,21 +79,27 @@
         <div id="addDataSourceModal" class="modal">
             <div class="modal-content">
                 <h4>Add new data source</h4>
+
                 <form id="newDataSourceForm">
 
 
                     <h5>Install local source</h5>
+
                     <div class="file-field input-field">
                         <div class="btn">
                             <span>File</span>
                             <input id="testPath" type="file" nwfile>
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" placeholder="Select data source config directory">
+                            <input class="file-path validate" type="text"
+                                   placeholder="Select data source config directory">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" onclick="submitDataSourceForm()">Create</button>
+                        <button type="submit" href="#!"
+                                class="modal-action modal-close waves-effect waves-green btn-flat"
+                                onclick="submitDataSourceForm()">Create
+                        </button>
                     </div>
                 </form>
             </div>
