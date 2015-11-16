@@ -1,45 +1,39 @@
-var path = './';
-var fs = require('fs');
 var CronJob = require('cron').CronJob;
 var utils = require('./utils.js');
+var path = require('path');
+var config = require('./config.js');
+var dataSourceUtils = require('./data_sources.js');
 
-//fs.watch(path, function () {
-//    if (location)
-//        location.reload();
-//});
 
-var Datastore = require('nedb')
-    , db = new Datastore({ filename: 'openPDS.db', autoload: true });
+var Datastore = require('nedb');
+var db = {};
 
-var dropboxPath = "/Users/radugatej/Dropbox/Apps/";
 
-exports.dataSourceParseJob = new CronJob('* */10 * * * *', function() {
-    running = true;
-    db.find({}, function (err, results) {
-        results.forEach(function(dataSource) {
-            var lastProcessingDate = dataSource.lastProcessingDate;
-            if (!lastProcessingDate) {
-                lastProcessingDate = new Date(0);
-            }
+db.dataSources = new Datastore({filename: path.join(config.dataPath, 'openPDS_dataSources.db'), autoload: true});
+db.dataSources.ensureIndex({fieldName: 'name', unique: true}, function(err) {
+    //console.log(err.toString());
+});
 
-            var filesToProcess = utils.getFilesAfterDate(dropboxPath + dataSource.dropboxFileLocation, lastProcessingDate);
+db.dataTypes = new Datastore({filename: path.join(config.dataPath, 'openPDS_dataTypes.db'), autoload: true});
+db.dataTypes.ensureIndex({fieldName: 'name', unique: true}, function(err) {
+    //console.log(err.toString());
+});
 
-            if (filesToProcess.length === 0) {
-                return;
-            }
+db.answerModules = new Datastore({filename: path.join(config.dataPath, 'openPDS_answerModules.db'), autoload: true});
+db.answerModules.ensureIndex({fieldName: 'name', unique: true}, function(err) {
+    //console.log(err.toString());
+});
 
-            var dataTypeDBs = [];
-            dataSource.dataTypes.forEach(function(dataType) {
-                dataTypeDBs.push(dataType.cache_db_name);
-            });
-            db.update({_id: dataSource._id}, {$set: {lastProcessingDate: new Date()}}, {});
 
-            utils.spawnPython(dataSource.parserPath, JSON.stringify({files: filesToProcess, dbs: dataTypeDBs}));
-        });
-    });
-}, function () {
-
-}, true, 'Europe/Copenhagen');
+//exports.dataSourceParseJob = new CronJob('* * * * * *', function () {
+//    db.dataSources.find({}, function (err, results) {
+//        results.forEach(function (dataSource) {
+//            processRawDataSource(dataSource);
+//        });
+//    });
+//}, function () {
+//
+//}, false, 'Europe/Copenhagen');
 
 exports.db = db;
 
