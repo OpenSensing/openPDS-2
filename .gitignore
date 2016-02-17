@@ -55,3 +55,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# MacOSX
+*.DS_Store
+
+# node modules
+
+*node_modules
