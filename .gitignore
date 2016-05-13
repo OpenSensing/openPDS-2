@@ -62,3 +62,6 @@ target/
 # node modules
 
 *node_modules
+
+# JetBrains
+*.idea
