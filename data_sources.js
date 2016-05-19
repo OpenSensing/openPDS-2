@@ -1,5 +1,5 @@
 var fs = require('fs-extra');
-var hogan = require('hogan');
+var hogan = require('hogan.js');
 var sqlite = require('sqlite3');
 var config = require('./config.js');
 var path = require('path');

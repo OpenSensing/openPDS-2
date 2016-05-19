@@ -2,7 +2,8 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var DataSource = require('./models/dataSourceModel.js');
+//var DataSource = require('./models/dataSourceModel.js');
+var DataSources = require('./models/UIModels/dataSourceModel');
 var AnswerModule = require('./models/answerModuleModel.js');
 
 var CollapsibleHeader = React.createClass({
@@ -53,13 +54,14 @@ var CollapsibleList = React.createClass({
 
     render: function () {
 
-        var serialize = this.props.model.serialize;
+        //var serialize = this.props.model.serialize;
         var listElements = this.props.model.elements.map(function(object) {
                 console.log(object);
                 return (
                     <CollapsibleListElement
                         name={object.name}
-                        pairs={serialize(object)}
+                        //pairs={serialize(object)}
+                        pairs={object.serialize()}
                     />
                 )
             });
@@ -72,9 +74,10 @@ var CollapsibleList = React.createClass({
     }
 });
 
-dataSourceModel = new DataSource();
+DataSources.addDummy();
+
 ReactDOM.render(
-    <CollapsibleList model={dataSourceModel}/>,
+    <CollapsibleList model={dataSources}/>,
     document.getElementById('dataSourcesContainer')
 );
 
