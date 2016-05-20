@@ -49,7 +49,7 @@ var CollapsibleList = React.createClass({
         $('.collapsible').collapsible();
     },
 
-    componentDidUpdate: function () {
+    componentDidUpdate: function () {  
         $('.collapsible').collapsible();
     },
 
@@ -75,16 +75,23 @@ var CollapsibleList = React.createClass({
     }
 });
 
-DataSources.addDummy();
+
+DataSources.loadAll()
 
 ReactDOM.render(
     <CollapsibleList model={DataSources}/>,
     document.getElementById('dataSourcesContainer')
 );
 
+
+/*});
+ReactDOM.render(
+    <CollapsibleList model={DataSources}/>,
+    document.getElementById('dataSourcesContainer')
+);*/
+
 AnswerModules.addDummy();
 ReactDOM.render(
     <CollapsibleList model={AnswerModules}/>,
     document.getElementById('answerModulesContainer')
 );
-
