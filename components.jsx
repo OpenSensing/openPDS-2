@@ -45,18 +45,30 @@ var CollapsibleListElement = React.createClass({
 
 var CollapsibleList = React.createClass({
 
+    getInitialState: function() {
+        return {elements : this.props.model.elements}
+    },
+
     componentDidMount: function () {
+        var self = this;
+        this.props.model.loadAll(function () {
+            self.setState({elements: self.props.model.elements});
+        });
+
         $('.collapsible').collapsible();
     },
 
-    componentDidUpdate: function () {  
+    componentDidUpdate: function () {
         $('.collapsible').collapsible();
+
     },
 
     render: function () {
 
-        //var serialize = this.props.model.serialize;
-        var listElements = this.props.model.elements.map(function(object) {
+        //  var listElements = this.props.model.elements.map(function(object) {
+
+        var listElements = this.state.elements.map(function(object) {
+
                 console.log(object);
                 return (
                     <CollapsibleListElement
@@ -76,14 +88,16 @@ var CollapsibleList = React.createClass({
 });
 
 
+
+function renderDataSources() {
+    ReactDOM.render(
+        <CollapsibleList model={DataSources}/>,
+        document.getElementById('dataSourcesContainer')
+    );
+};
+
+DataSources.subscribe(renderDataSources)
 DataSources.loadAll()
-
-ReactDOM.render(
-    <CollapsibleList model={DataSources}/>,
-    document.getElementById('dataSourcesContainer')
-);
-
-
 /*});
 ReactDOM.render(
     <CollapsibleList model={DataSources}/>,
