@@ -1,19 +1,42 @@
 /**
  * Created by mpio on 19/05/16.
  */
-var UIModel = require('./UIModel');
+var UIModel = require('./UIModel'),
+    db      = process.mainModule.exports.db;;
 
 class answerModuleModel extends UIModel {
     constructor(initData) {
         super(initData);
     };
+    static subscribe(callback) {
+        answerModuleModel.onChange.push(callback)
+    };
+
+    //static inform() {
+    //    this.constructor.onChange.forEach((cb) => {
+    //            cb();
+    //    });
+    //};
+
+
     static add(initData) {
-        var newDataSource = new answerModuleModel(initData);
-        answerModuleModel.elements.push(newDataSource);
-        console.log('Created a data source object "' + initData.name + '"');
-    }
+        var newAnswerModule = new answerModuleModel(initData);
+        answerModuleModel.elements.push(newAnswerModule);
+        console.log('Created a answer module object "' + initData.name + '"');
+
+        answerModuleModel.inform();
+    };
+
+    static loadAll() {
+        db.answerModules.find({}, (err, records) => {
+            records.forEach( (record) => {
+            this.add(record);
+            });
+        });
+    };
+
     static addDummy() {
-        var initD ={name: 'Dummy AM Model',
+        var initD ={name: 'Dummy AM Source Model',
             types: ['t1', 't2'],
             description: "playin'",
             author: 'Jam',
@@ -22,7 +45,6 @@ class answerModuleModel extends UIModel {
             schedule: 'NA'};
 
         answerModuleModel.add(initD);
-        return answerModuleModel.elements['Dummy Data Source'];
     }
     static destroy(){
 
@@ -30,13 +52,16 @@ class answerModuleModel extends UIModel {
     static destroyAll(){
 
     }
-    static loadAll() {
+    // TODO: check if it's the React way
 
-    }
-
-}
+};
 
 answerModuleModel.elements = [];
+answerModuleModel.onChange = [];
+answerModuleModel.inform = function inform() {
+    answerModuleModel.onChange.forEach((cb) => {cb()})
+}
 //answerModuleModel.elements = [];
+
 
 module.exports = answerModuleModel;

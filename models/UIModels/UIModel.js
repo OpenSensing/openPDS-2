@@ -41,7 +41,8 @@ class UIModel {
 
         this.name              = initData.name;
         this.DataTypes         = initData.requiredDataTypes || initData.dataTypes || '';
-        this.dropboxLocation   = initData.dropboxDirectory || initData.DropboxFileLocation ||'';
+        this.dropboxLocation   = initData.dropboxDirectory || '' ;
+        if (this.dropboxLocation == '') { this.dropboxLocation   = initData.dropboxFileLocation || '' };
         this.description       = initData.description || '';
         this.author            = initData.author || '';
         this.version           = initData.version || '';
@@ -55,7 +56,12 @@ class UIModel {
 
         var self = this;
         keys.forEach(function (key){
-            expanded.push({name: key, value: self[key].toString()})
+            if (key == 'DataTypes' && typeof(self[key][0])== Object) {
+                var dts = self[key];
+                expanded.push({name:key, value: dts.map(function (dt) {return dt.name}).toString()});
+            }else {
+                expanded.push({name: key, value: self[key].toString()});
+            }
         });
 
         return expanded;

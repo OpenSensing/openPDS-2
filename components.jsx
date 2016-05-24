@@ -45,15 +45,15 @@ var CollapsibleListElement = React.createClass({
 
 var CollapsibleList = React.createClass({
 
-    getInitialState: function() {
-        return {elements : this.props.model.elements}
-    },
+    //getInitialState: function() {
+    //    return {elements : this.props.model.elements}
+    //},
 
     componentDidMount: function () {
-        var self = this;
-        this.props.model.loadAll(function () {
-            self.setState({elements: self.props.model.elements});
-        });
+        //var self = this;
+        //this.props.model.loadAll(function () {
+        //    self.setState({elements: self.props.model.elements});
+        //});
 
         $('.collapsible').collapsible();
     },
@@ -65,9 +65,9 @@ var CollapsibleList = React.createClass({
 
     render: function () {
 
-        //  var listElements = this.props.model.elements.map(function(object) {
+        var listElements = this.props.model.elements.map(function(object) {
 
-        var listElements = this.state.elements.map(function(object) {
+        //var listElements = this.state.elements.map(function(object) {
 
                 console.log(object);
                 return (
@@ -104,8 +104,14 @@ ReactDOM.render(
     document.getElementById('dataSourcesContainer')
 );*/
 
-AnswerModules.addDummy();
-ReactDOM.render(
-    <CollapsibleList model={AnswerModules}/>,
-    document.getElementById('answerModulesContainer')
-);
+//AnswerModules.addDummy();
+
+function renderAnswerModules() {
+    ReactDOM.render(
+        <CollapsibleList model={AnswerModules}/>,
+        document.getElementById('answerModulesContainer')
+    );
+};
+
+AnswerModules.subscribe(renderAnswerModules);
+AnswerModules.loadAll();
