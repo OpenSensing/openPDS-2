@@ -7,24 +7,26 @@ var UIModel = require('./UIModel'),
 class answerModuleModel extends UIModel {
     constructor(initData) {
         super(initData);
+
+        this.name              = initData.name;
+        this.scriptPath        = initData.scriptPath;
+        this.dropboxDirectory  = initData.dropboxDirectory;
+        this.requiredDataTypes = initData.requiredDataTypes || 'N/A';
     };
     static subscribe(callback) {
         answerModuleModel.onChange.push(callback)
     };
 
-    //static inform() {
-    //    this.constructor.onChange.forEach((cb) => {
-    //            cb();
-    //    });
-    //};
 
-
-    static add(initData) {
+    static add(initData, save = false) {
         var newAnswerModule = new answerModuleModel(initData);
         answerModuleModel.elements.push(newAnswerModule);
         console.log('Created a answer module object "' + initData.name + '"');
 
         answerModuleModel.inform();
+        if (save) {
+            db.answerModules.insert()
+        }
     };
 
     static loadAll() {
@@ -36,13 +38,12 @@ class answerModuleModel extends UIModel {
     };
 
     static addDummy() {
-        var initD ={name: 'Dummy AM Source Model',
-            types: ['t1', 't2'],
-            description: "playin'",
-            author: 'Jam',
-            version: '0.0.1',
-            folder: '~/Dropbox/Apps/sraps',
-            schedule: 'NA'};
+        var initD = {
+            name: 'Dummy AM Source Model',
+            requiredDataTypes: ['t1', 't2'],
+            dropboxDirectory: '~/Dropbox/Apps/sraps',
+            scriptPath: 'script.py'
+        }
 
         answerModuleModel.add(initD);
     }

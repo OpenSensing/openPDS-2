@@ -1,27 +1,45 @@
 var UIModel = require('./UIModel'),
     db      = process.mainModule.exports.db;
+var ValidationErrors = require('../errorTypes'),
+    NoConstraintViolation    = ValidationErrors.NoConstraintViolation,
+    MandatoryValueConstraintViolation = ValidationErrors.MandatoryValueConstraintViolation,
+    UniquenessConstrainViolation = ValidationErrors.UniquenessConstraintViolation;
 
 class dataSourceModel extends UIModel {
     constructor(initData) {
         super(initData);
+
+        this.setName(initData.name);
+
+        this.parserPath          = initData.parserPath;
+        this.dropboxFileLocation = initData.dropboxFileLocation;
+        this.dataTypes           = initData.dataTypes || 'N/A';
+    };
+
+    setName(name) {
+        var validationResult = dataSourceModel.checkNameAsId(name);
+        if (validationResult instanceof NoConstraintViolation) {
+            this.name = name;
+        } else {
+            throw validationResult;
+        };
     };
 
     static subscribe(callback) {
         dataSourceModel.onChange.push(callback)
     };
 
-    //static inform() {
-    //    this.constructor.onChange.forEach((cb) => {
-    //            cb();
-    //    });
-    //};
-
-
     static add(initData) {
-        var newDataSource = new dataSourceModel(initData);
-        dataSourceModel.elements.push(newDataSource);
-        console.log('Created a data source object "' + initData.name + '"');
-
+        try {
+            var newDataSource = new dataSourceModel(initData);
+        }catch(e) {
+            console.log( e.constructor.name +": "+ e.message);
+            newDataSource = null;
+        }
+        if (newDataSource) {
+            dataSourceModel.elements.push(newDataSource);
+            console.log('Created a data source object "' + initData.name + '"');
+        }
         dataSourceModel.inform();
     };
 
@@ -35,12 +53,10 @@ class dataSourceModel extends UIModel {
 
     static addDummy() {
         var initD ={name: 'Dummy Data Source Model',
-            types: ['t1', 't2'],
-            description: "playin'",
-            author: 'Jam',
-            version: '0.0.1',
-            folder: '~/Dropbox/Apps/sraps',
-            schedule: 'NA'};
+            dataTypes: [{name: 't1'}, {name:'t2'}],
+            dropboxFileLocation: '~/Dropbox/Apps/sraps',
+            parserPath: 'dummy.py'
+        };
 
         dataSourceModel.add(initD);
     }
@@ -58,8 +74,20 @@ dataSourceModel.elements = [];
 dataSourceModel.onChange = [];
 dataSourceModel.inform = function inform() {
     dataSourceModel.onChange.forEach((cb) => {cb()})
-}
-//dataSourceModel.elements = [];
+};
+
+dataSourceModel.checkNameAsId = function(name) {
+    var validationResult = UIModel.checkName(name);
+    if (validationResult instanceof NoConstraintViolation) {
+        if (!name) {
+            validationResult = new MandatoryValueConstraintViolation("Name of a registerd dataSource has to be specified");
+        } else if (dataSourceModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {
+            validationResult =  UniquenessConstrainViolation("There is already a data source called " + name)
+        };
+    };
+
+    return validationResult;
+};
 
 
 module.exports = dataSourceModel;
