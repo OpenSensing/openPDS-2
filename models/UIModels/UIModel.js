@@ -30,10 +30,11 @@ class UIModel {
     };
 
     static checkName(name) {
+        if (!name) return new NoConstraintViolation;
         if (typeof(name) == 'string' || name.trim() != "") {
             return new NoConstraintViolation()
         } else {
-            return new RangeConstraintViolation("Name of AM/data source hast to be an nonempty string")
+            return new RangeConstraintViolation("Name of AM/data source hast to be a nonempty string")
         };
     };
 }

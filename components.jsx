@@ -69,7 +69,7 @@ var CollapsibleList = React.createClass({
 
         //var listElements = this.state.elements.map(function(object) {
 
-                console.log(object);
+ //               console.log(object);
                 return (
                     <CollapsibleListElement
                         name={object.name}

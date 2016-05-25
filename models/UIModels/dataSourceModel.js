@@ -11,8 +11,8 @@ class dataSourceModel extends UIModel {
 
         this.setName(initData.name);
 
-        this.parserPath          = initData.parserPath;
-        this.dropboxFileLocation = initData.dropboxFileLocation;
+        this.parserPath          = initData.parserPath || 'N/A';
+        this.dropboxFileLocation = initData.dropboxFileLocation || 'N/A';
         this.dataTypes           = initData.dataTypes || 'N/A';
     };
 
@@ -39,8 +39,8 @@ class dataSourceModel extends UIModel {
         if (newDataSource) {
             dataSourceModel.elements.push(newDataSource);
             console.log('Created a data source object "' + initData.name + '"');
+            dataSourceModel.inform();
         }
-        dataSourceModel.inform();
     };
 
     static loadAll() {
@@ -80,9 +80,9 @@ dataSourceModel.checkNameAsId = function(name) {
     var validationResult = UIModel.checkName(name);
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
-            validationResult = new MandatoryValueConstraintViolation("Name of a registerd dataSource has to be specified");
-        } else if (dataSourceModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {
-            validationResult =  UniquenessConstrainViolation("There is already a data source called " + name)
+            validationResult = new MandatoryValueConstraintViolation("Name of a registered dataSource has to be specified");
+        } else if (dataSourceModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
+            validationResult =  new UniquenessConstrainViolation("There is already a data source called " + name)
         };
     };
 
