@@ -44,6 +44,7 @@ class answerModuleModel extends UIModel {
             answerModuleModel.elements.push(newDataSource);
             console.log('Created an Answer Module object "' + initData.name + '"');
             answerModuleModel.inform();
+            this._save(newDataSource);
         }
     };
 
@@ -65,12 +66,23 @@ class answerModuleModel extends UIModel {
 
         answerModuleModel.add(initD);
     }
-    static destroy(){
 
-    }
+    static _save(amModel) {
+        db.answerModules.insert(amModel);
+    };
+
+    static destroy(amModelName){
+        db.answerModules.remove(amModelName);
+        //TODO: remove the crappy elements array with an aobject
+        var  moduleIndex;
+        answerModuleModel.elements.forEach((val, i) => {if(val.name == amModelName.name) moduleIndex = i;})
+        answerModuleModel.elements.splice(moduleIndex, 1);
+        this.inform();
+        //TODO:  ensure cleaning up of the AM script, folder etc.
+    };
     static destroyAll(){
 
-    }
+    };
     // TODO: check if it's the React way
 
 };

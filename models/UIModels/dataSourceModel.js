@@ -40,6 +40,7 @@ class dataSourceModel extends UIModel {
             dataSourceModel.elements.push(newDataSource);
             console.log('Created a data source object "' + initData.name + '"');
             dataSourceModel.inform();
+            this._save(newDataSource);
         }
     };
 
@@ -59,10 +60,19 @@ class dataSourceModel extends UIModel {
         };
 
         dataSourceModel.add(initD);
-    }
-    static destroy(){
-
-    }
+    };
+    static _save(dsModel) {
+        db.dataSources.insert(dsModel);
+    };
+    static destroy(dsModelName){
+        db.dataSources.remove(dsModelName);
+        //TODO: remove the crappy elements array with an aobject
+        var  moduleIndex;
+        this.elements.forEach((val, i) => {if(val.name == dsModelName.name) moduleIndex = i;})
+        this.elements.splice(moduleIndex, 1);
+        this.inform();
+        //TODO:  ensure cleaning up of the parser script, folder etc.
+    };
     static destroyAll(){
 
     }
