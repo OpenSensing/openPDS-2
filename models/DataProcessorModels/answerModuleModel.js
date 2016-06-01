@@ -2,14 +2,14 @@
  * Created by mpio on 19/05/16.
  */
 
-var UIModel = require('./UIModel'),
+var DataProcessorModel = require('./DataProcessorModel'),
     db      = process.mainModule.exports.db;
 var ValidationErrors = require('../errorTypes'),
     NoConstraintViolation    = ValidationErrors.NoConstraintViolation,
     MandatoryValueConstraintViolation = ValidationErrors.MandatoryValueConstraintViolation,
     UniquenessConstrainViolation = ValidationErrors.UniquenessConstraintViolation;
 
-class answerModuleModel extends UIModel {
+class answerModuleModel extends DataProcessorModel {
     constructor(initData) {
         super(initData);
 
@@ -17,7 +17,7 @@ class answerModuleModel extends UIModel {
 
         this.scriptPath          = initData.scriptPath || 'N/A';
         this.dropboxDirectory = initData.dropboxDirectory || 'N/A';
-        this.requiredDataTypes   = initData.requiredDataTypes || 'N/A';
+        this.requiredDataTypes   = initData.requiredDataTypes || ['N/A'];
     };
 
     setName(name) {
@@ -33,25 +33,30 @@ class answerModuleModel extends UIModel {
         answerModuleModel.onChange.push(callback)
     };
 
-    static add(initData) {
+    static _add(initData, cb) {
         try {
-            var newDataSource = new answerModuleModel(initData);
+            var newAnswerModule = new answerModuleModel(initData);
         }catch(e) {
             console.log( e.constructor.name +": "+ e.message);
-            newDataSource = null;
+            newAnswerModule = null;
         }
-        if (newDataSource) {
-            answerModuleModel.elements.push(newDataSource);
+        if (newAnswerModule) {
+            answerModuleModel.elements.push(newAnswerModule);
             console.log('Created an Answer Module object "' + initData.name + '"');
             answerModuleModel.inform();
-            this._save(newDataSource);
+
+            typeof(cb) =='function' && cb(newAnswerModule);
         }
+    };
+
+    static create(iniitData) {
+        this._add(iniitData,(newAM) => {this._save(newAM);});
     };
 
     static loadAll() {
         db.answerModules.find({}, (err, records) => {
             records.forEach( (record) => {
-                this.add(record);
+                this._add(record);
             });
         });
     };
@@ -64,7 +69,7 @@ class answerModuleModel extends UIModel {
             scriptPath: 'script.py'
         }
 
-        answerModuleModel.add(initD);
+        answerModuleModel._add(initD);
     }
 
     static _save(amModel) {
@@ -72,10 +77,10 @@ class answerModuleModel extends UIModel {
     };
 
     static destroy(amModelName){
-        db.answerModules.remove(amModelName);
+        db.answerModules.remove({name: amModelName});
         //TODO: remove the crappy elements array with an aobject
         var  moduleIndex;
-        answerModuleModel.elements.forEach((val, i) => {if(val.name == amModelName.name) moduleIndex = i;})
+        answerModuleModel.elements.forEach((val, i) => {if(val.name == amModelName) moduleIndex = i;})
         answerModuleModel.elements.splice(moduleIndex, 1);
         this.inform();
         //TODO:  ensure cleaning up of the AM script, folder etc.
@@ -94,7 +99,7 @@ answerModuleModel.inform = function inform() {
 };
 
 answerModuleModel.checkNameAsId = function(name) {
-    var validationResult = UIModel.checkName(name);
+    var validationResult = DataProcessorModel.checkName(name);
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dAnswer module has to be specified");

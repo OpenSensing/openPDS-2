@@ -1,11 +1,11 @@
-var UIModel = require('./UIModel'),
+var DataProcessorModel = require('./DataProcessorModel'),
     db      = process.mainModule.exports.db;
 var ValidationErrors = require('../errorTypes'),
     NoConstraintViolation    = ValidationErrors.NoConstraintViolation,
     MandatoryValueConstraintViolation = ValidationErrors.MandatoryValueConstraintViolation,
     UniquenessConstrainViolation = ValidationErrors.UniquenessConstraintViolation;
 
-class dataSourceModel extends UIModel {
+class dataSourceModel extends DataProcessorModel {
     constructor(initData) {
         super(initData);
 
@@ -13,7 +13,7 @@ class dataSourceModel extends UIModel {
 
         this.parserPath          = initData.parserPath || 'N/A';
         this.dropboxFileLocation = initData.dropboxFileLocation || 'N/A';
-        this.dataTypes           = initData.dataTypes || 'N/A';
+        this.dataTypes           = initData.dataTypes || ['N/A'];
     };
 
     setName(name) {
@@ -29,7 +29,7 @@ class dataSourceModel extends UIModel {
         dataSourceModel.onChange.push(callback)
     };
 
-    static add(initData) {
+    static _add(initData, cb) {
         try {
             var newDataSource = new dataSourceModel(initData);
         }catch(e) {
@@ -40,14 +40,19 @@ class dataSourceModel extends UIModel {
             dataSourceModel.elements.push(newDataSource);
             console.log('Created a data source object "' + initData.name + '"');
             dataSourceModel.inform();
-            this._save(newDataSource);
+            //this._save(newDataSource);
+            typeof(cb) == 'function' && cb(newDataSource);
         }
+    };
+
+    static create(iniitData) {
+        this._add(iniitData,(newDS) => {this._save(newDS);});
     };
 
     static loadAll() {
         db.dataSources.find({}, (err, records) => {
             records.forEach( (record) => {
-                this.add(record);
+                this._add(record);
             });
         });
     };
@@ -59,16 +64,16 @@ class dataSourceModel extends UIModel {
             parserPath: 'dummy.py'
         };
 
-        dataSourceModel.add(initD);
+        dataSourceModel._add(initD);
     };
     static _save(dsModel) {
         db.dataSources.insert(dsModel);
     };
     static destroy(dsModelName){
-        db.dataSources.remove(dsModelName);
-        //TODO: remove the crappy elements array with an aobject
+        db.dataSources.remove({name: dsModelName});
+        //TODO: remove the crappy elements array and replace hash map object
         var  moduleIndex;
-        this.elements.forEach((val, i) => {if(val.name == dsModelName.name) moduleIndex = i;})
+        this.elements.forEach((val, i) => {if(val.name == dsModelName) moduleIndex = i;})
         this.elements.splice(moduleIndex, 1);
         this.inform();
         //TODO:  ensure cleaning up of the parser script, folder etc.
@@ -87,7 +92,7 @@ dataSourceModel.inform = function inform() {
 };
 
 dataSourceModel.checkNameAsId = function(name) {
-    var validationResult = UIModel.checkName(name);
+    var validationResult = DataProcessorModel.checkName(name);
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dataSource has to be specified");

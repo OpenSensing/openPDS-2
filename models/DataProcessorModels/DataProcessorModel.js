@@ -5,7 +5,7 @@ var ValidationErrors = require('../errorTypes'),
     NoConstraintViolation    = ValidationErrors.NoConstraintViolation,
     RangeConstraintViolation = ValidationErrors.RangeConstraintViolation;
 
-class UIModel {
+class DataProcessorModel {
 
     constructor(initData) {
         this._id       = initData._id;
@@ -42,4 +42,4 @@ class UIModel {
 // TODO: checker methods for props
 
 
-module.exports = UIModel;
+module.exports = DataProcessorModel;
