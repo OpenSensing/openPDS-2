@@ -2,8 +2,10 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var DataSource = require('./models/dataSourceModel.js');
-var AnswerModule = require('./models/answerModuleModel.js');
+//var DataSource = require('./models/dataSourceModel.js');
+var DataSources = require('./models/DataProcessorModels/dataSourceModel');
+//var AnswerModule = require('./models/answerModuleModel.js');
+var AnswerModules = require('./models/DataProcessorModels/answerModuleModel');
 
 var CollapsibleHeader = React.createClass({
     render: function () {
@@ -43,23 +45,36 @@ var CollapsibleListElement = React.createClass({
 
 var CollapsibleList = React.createClass({
 
+    //getInitialState: function() {
+    //    return {elements : this.props.model.elements}
+    //},
+
     componentDidMount: function () {
+        //var self = this;
+        //this.props.model.loadAll(function () {
+        //    self.setState({elements: self.props.model.elements});
+        //});
+
         $('.collapsible').collapsible();
     },
 
     componentDidUpdate: function () {
         $('.collapsible').collapsible();
+
     },
 
     render: function () {
 
-        var serialize = this.props.model.serialize;
         var listElements = this.props.model.elements.map(function(object) {
-                console.log(object);
+
+        //var listElements = this.state.elements.map(function(object) {
+
+ //               console.log(object);
                 return (
                     <CollapsibleListElement
                         name={object.name}
-                        pairs={serialize(object)}
+                        //pairs={serialize(object)}
+                        pairs={object.serialize()}
                     />
                 )
             });
@@ -72,15 +87,31 @@ var CollapsibleList = React.createClass({
     }
 });
 
-dataSourceModel = new DataSource();
+
+
+function renderDataSources() {
+    ReactDOM.render(
+        <CollapsibleList model={DataSources}/>,
+        document.getElementById('dataSourcesContainer')
+    );
+};
+
+DataSources.subscribe(renderDataSources)
+DataSources.loadAll()
+/*});
 ReactDOM.render(
-    <CollapsibleList model={dataSourceModel}/>,
+    <CollapsibleList model={DataSources}/>,
     document.getElementById('dataSourcesContainer')
-);
+);*/
 
-answerModelModule = new AnswerModule();
-ReactDOM.render(
-    <CollapsibleList model={answerModelModule}/>,
-    document.getElementById('answerModulesContainer')
-);
+//AnswerModules.addDummy();
 
+function renderAnswerModules() {
+    ReactDOM.render(
+        <CollapsibleList model={AnswerModules}/>,
+        document.getElementById('answerModulesContainer')
+    );
+};
+
+AnswerModules.subscribe(renderAnswerModules);
+AnswerModules.loadAll();
