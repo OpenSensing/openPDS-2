@@ -39,7 +39,5 @@ class DataProcessorModel {
     };
 }
 
-// TODO: checker methods for props
-
 
 module.exports = DataProcessorModel;

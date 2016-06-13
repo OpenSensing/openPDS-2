@@ -2,7 +2,6 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-//var DataSource = require('./models/dataSourceModel.js');
 var DataSources = require('./models/DataProcessorModels/dataSourceModel');
 //var AnswerModule = require('./models/answerModuleModel.js');
 var AnswerModules = require('./models/DataProcessorModels/answerModuleModel');
@@ -96,15 +95,10 @@ function renderDataSources() {
     );
 };
 
+
 DataSources.subscribe(renderDataSources)
 DataSources.loadAll()
-/*});
-ReactDOM.render(
-    <CollapsibleList model={DataSources}/>,
-    document.getElementById('dataSourcesContainer')
-);*/
 
-//AnswerModules.addDummy();
 
 function renderAnswerModules() {
     ReactDOM.render(

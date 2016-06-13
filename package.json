@@ -9,7 +9,7 @@
     "height": 600
   },
   "dependencies": {
-    "cron": "1.x.x",
+    "cron": "^1.1.0",
     "fs-extra": "0.26.x",
     "hogan": "1.x.x",
     "nedb": "1.4.x",

@@ -1,5 +1,8 @@
+/**
+ * Created by mpio on 13/06/16.
+ */
 var DataProcessorModel = require('./DataProcessorModel'),
-    db      = process.mainModule.exports.db;
+    db                 = process.mainModule.exports.db;
 var ValidationErrors = require('../errorTypes'),
     NoConstraintViolation    = ValidationErrors.NoConstraintViolation,
     MandatoryValueConstraintViolation = ValidationErrors.MandatoryValueConstraintViolation,
@@ -10,10 +13,49 @@ class dataTypeModel extends DataProcessorModel {
         super(initData);
 
         this.setName(initData.name);
+        this.setDataSource(initData.dataSource);
 
-        this.parserPath          = initData.parserPath || 'N/A';
-        this.dropboxFileLocation = initData.dropboxFileLocation || 'N/A';
-        this.dataTypes           = initData.dataTypes || ['N/A'];
+        this.setSchema(initData.schema);
+
+        this.cache_db_name = this.name + '_' + this.dataSource + '.db';
+        this.description   = initData.description || 'N/A';
+
+    };
+
+    
+    setDataSource(dataSourceName) {
+        var validationResult = this.checkDataSource(dataSourceName);
+
+        if (validationResult instanceof NoConstraintViolation) {
+            this.dataSource = dataSourceName;
+        } else {
+            throw validationResult;
+        }
+    };
+    
+    checkDataSource(dataSourceName) {
+        if(!dataSourceName) return new NoConstraintViolation;
+
+        //TODO: foreign key constraint on DataSources.name
+        return new NoConstraintViolation
+    };
+    
+    setSchema(schema) {
+        var validationResult = this.checkSchema(schema);
+        
+        if (validationResult instanceof NoConstraintViolation) {
+            this.schema = schema;
+        }else {
+            throw validationResult;
+        };
+    };
+    
+    checkSchema(schema) {
+        if (!schema || typeof(schema) != 'object') {
+            return new MandatoryValueConstraintViolation('Error - data type schema must be a nonempty object')
+        } else {
+            return new NoConstraintViolation();
+        }
     };
 
     setName(name) {
@@ -24,6 +66,7 @@ class dataTypeModel extends DataProcessorModel {
             throw validationResult;
         };
     };
+    // checkNameAsId() checker defined in ES5 way below (in order to enable access to static store)
 
     static subscribe(callback) {
         dataTypeModel.onChange.push(callback)
@@ -38,7 +81,7 @@ class dataTypeModel extends DataProcessorModel {
         }
         if (newDataType) {
             dataTypeModel.elements.push(newDataType);
-            console.log('Created a data source object "' + initData.name + '"');
+            console.log('Created a data type object "' + initData.name + '"');
             dataTypeModel.inform();
             typeof(cb) == 'function' && cb(newDataType);
         }
@@ -87,10 +130,8 @@ class dataTypeModel extends DataProcessorModel {
 dataTypeModel.elements = [];
 dataTypeModel.onChange = [];
 dataTypeModel.inform = function inform() {
-    dataTypeModel.onChange.forEach((cb) => {cb()})
+    dataTypeModel.onChange.forEach((cb) => {cb()});
 };
-
-// Validation
 
 dataTypeModel.checkNameAsId = function(name) {
     var validationResult = DataProcessorModel.checkName(name);
