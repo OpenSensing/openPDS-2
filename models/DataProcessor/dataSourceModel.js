@@ -71,8 +71,18 @@ class dataSourceModel extends DataProcessorModel {
         db.dataSources.insert(dsModel);
     };
 
-    static getOne(query) {
-        //TODO: implement in datatype, AM and datasource
+    static get(names) {
+        if (typeof(names) == 'string') names = [names];
+
+        var selection = {};
+        names.forEach((name) => {
+            if (dataSourceModel.elements[name]) {
+                selection[name] = dataSourceModel.elements[name]
+            }else {
+                console.warn('Invalid selector. Trying to select nonexsisting dataSourceModel with name: '+ name)
+            }
+        })
+        return selection
     };
 
 

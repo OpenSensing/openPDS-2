@@ -119,12 +119,18 @@ class dataTypeModel extends DataProcessorModel {
         db.dataTypes.insert(dtModel);
     };
 
-    static getOne(query) {
-        //TODO: implement in datatype, AM and datasource
-    };
+    static get(names) {
+        if (typeof(names) == 'string') names = [names];
 
-    static getAllforDataSource() {
-        //TODO
+        var selection = {};
+        names.forEach((name) => {
+            if (dataSourceModel.elements[name]) {
+             selection[name] = dataSourceModel.elements[name]
+            }else {
+                console.warn('Invalid selector. Trying to select nonexsisting dataSourceModel with name: '+ name)
+            }
+        });
+        return selection
     };
 
 

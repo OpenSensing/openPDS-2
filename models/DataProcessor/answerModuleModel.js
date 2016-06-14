@@ -77,10 +77,19 @@ class answerModuleModel extends DataProcessorModel {
         db.answerModules.insert(amModel);
     };
 
-    static getOne(query) {
-        //TODO: implement in datatype, AM and datasource
-    };
+    static get(names) {
+        if (typeof(names) == 'string') names = [names];
 
+        var selection = {};
+        names.forEach((name) => {
+            if (dataSourceModel.elements[name]) {
+                selection[name] = dataSourceModel.elements[name]
+            }else {
+                console.warn("Invalid selector. Trying to select nonexsisting answerModuleModel with name: "+ name)
+            }
+        })
+        return selection
+    };
 
     static destroy(amModelName){
         db.answerModules.remove({name: amModelName});
