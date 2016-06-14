@@ -16,7 +16,7 @@ class dataTypeModel extends DataProcessorModel {
         this.setDataSource(initData.dataSource);
         this.setSchema(initData.schema);
 
-        this.cache_db_name = initiData.cache_db_name || this.name + '_' + this.dataSource + '.db';
+        this.cache_db_name = initData.cache_db_name || this.name + '_' + this.dataSource + '.db';
         this.description   = initData.description || 'N/A';
 
     };
