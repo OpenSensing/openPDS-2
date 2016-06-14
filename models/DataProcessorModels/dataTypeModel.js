@@ -14,10 +14,9 @@ class dataTypeModel extends DataProcessorModel {
 
         this.setName(initData.name);
         this.setDataSource(initData.dataSource);
-
         this.setSchema(initData.schema);
 
-        this.cache_db_name = this.name + '_' + this.dataSource + '.db';
+        this.cache_db_name = initiData.cache_db_name || this.name + '_' + this.dataSource + '.db';
         this.description   = initData.description || 'N/A';
 
     };
@@ -81,47 +80,55 @@ class dataTypeModel extends DataProcessorModel {
         }
         if (newDataType) {
             dataTypeModel.elements.push(newDataType);
-            console.log('Created a data type object "' + initData.name + '"');
             dataTypeModel.inform();
             typeof(cb) == 'function' && cb(newDataType);
         }
     };
 
     static create(initData) {
-        this._add(initData,(newDS) => {this._save(newDS);});
+        this._add(initData,(newDT) => {this._save(newDT);});
     };
 
     static loadAll() {
-        db.dataSources.find({}, (err, records) => {
+        db.dataTypes.find({}, (err, records) => {
             records.forEach( (record) => {
+                console.log('Found data type '+record.name+' in the db. Proceeding to loading it to the model');
                 this._add(record);
             });
         });
     };
 
     static addDummy() {
-        var initD ={name: 'Dummy Data Source Model',
-            dataTypes: [{name: 't1'}, {name:'t2'}],
-            dropboxFileLocation: '~/Dropbox/Apps/sraps',
-            parserPath: 'dummy.py'
+        var initD ={
+            "dataSource" : "Digital-Halo",
+            "name"       : "sromain",
+            "description": "Stores unique sromain colors 'up to one dot before the ",
+            "schema": {
+                "game": "TEXT UNIQUE",
+                "general": "INT",
+                "specific": "INT",
+                "private": "INT",
+                "public": "TEXT"
+            }
         };
 
         dataTypeModel._add(initD);
     };
-    static _save(dsModel) {
-        db.dataSources.insert(dsModel);
+    static _save(dtModel) {
+        db.dataTypes.insert(dtModel);
     };
-    static destroy(dsModelName){
-        db.dataSources.remove({name: dsModelName});
+    static destroy(dtModelName){
+        db.dataTypes.remove({name: dtModelName});
+        //Below a crappy way of removing the Model by name from the elements array
         //TODO: remove the crappy elements array and replace hash map object
-        var  moduleIndex;
-        this.elements.forEach((val, i) => {if(val.name == dsModelName) moduleIndex = i;})
-        this.elements.splice(moduleIndex, 1);
+        var  dtIndex;
+        this.elements.forEach((val, i) => {if(val.name == dtModelName) dtIndex = i;})
+        this.elements.splice(dtIndex, 1);
         this.inform();
         //TODO:  ensure cleaning up of the parser script, folder etc.
     };
     static destroyAll(){
-
+        //TODO: destroy them all
     }
     // TODO: check if it's the React way
 
@@ -139,7 +146,7 @@ dataTypeModel.checkNameAsId = function(name) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dataSource has to be specified");
         } else if (dataTypeModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
-            validationResult =  new UniquenessConstrainViolation("There is already a data source called " + name)
+            validationResult =  new UniquenessConstrainViolation("There is already a data type called " + name)
         };
     };
 

@@ -5,7 +5,7 @@ var ValidationErrors = require('../errorTypes'),
     MandatoryValueConstraintViolation = ValidationErrors.MandatoryValueConstraintViolation,
     UniquenessConstrainViolation = ValidationErrors.UniquenessConstraintViolation;
 
-class dataTypeModel extends DataProcessorModel {
+class dataSourceModel extends DataProcessorModel {
     constructor(initData) {
         super(initData);
 
@@ -17,7 +17,7 @@ class dataTypeModel extends DataProcessorModel {
     };
 
     setName(name) {
-        var validationResult = dataTypeModel.checkNameAsId(name);
+        var validationResult = dataSourceModel.checkNameAsId(name);
         if (validationResult instanceof NoConstraintViolation) {
             this.name = name;
         } else {
@@ -26,21 +26,21 @@ class dataTypeModel extends DataProcessorModel {
     };
 
     static subscribe(callback) {
-        dataTypeModel.onChange.push(callback)
+        dataSourceModel.onChange.push(callback)
     };
 
     static _add(initData, cb) {
         try {
-            var newDataType = new dataTypeModel(initData);
+            var newDataSource = new dataSourceModel(initData);
         }catch(e) {
             console.log( e.constructor.name +": "+ e.message);
-            newDataType = null;
+            newDataSource = null;
         }
-        if (newDataType) {
-            dataTypeModel.elements.push(newDataType);
+        if (newDataSource) {
+            dataSourceModel.elements.push(newDataSource);
             console.log('Created a data source object "' + initData.name + '"');
-            dataTypeModel.inform();
-            typeof(cb) == 'function' && cb(newDataType);
+            dataSourceModel.inform();
+            typeof(cb) == 'function' && cb(newDataSource);
         }
     };
 
@@ -63,7 +63,7 @@ class dataTypeModel extends DataProcessorModel {
             parserPath: 'dummy.py'
         };
 
-        dataTypeModel._add(initD);
+        dataSourceModel._add(initD);
     };
     static _save(dsModel) {
         db.dataSources.insert(dsModel);
@@ -71,9 +71,9 @@ class dataTypeModel extends DataProcessorModel {
     static destroy(dsModelName){
         db.dataSources.remove({name: dsModelName});
         //TODO: remove the crappy elements array and replace hash map object
-        var  moduleIndex;
-        this.elements.forEach((val, i) => {if(val.name == dsModelName) moduleIndex = i;})
-        this.elements.splice(moduleIndex, 1);
+        var  dsIndex;
+        this.elements.forEach((val, i) => {if(val.name == dsModelName) dsIndex = i;})
+        this.elements.splice(dsIndex, 1);
         this.inform();
         //TODO:  ensure cleaning up of the parser script, folder etc.
     };
@@ -84,20 +84,20 @@ class dataTypeModel extends DataProcessorModel {
 
 };
 
-dataTypeModel.elements = [];
-dataTypeModel.onChange = [];
-dataTypeModel.inform = function inform() {
-    dataTypeModel.onChange.forEach((cb) => {cb()})
+dataSourceModel.elements = [];
+dataSourceModel.onChange = [];
+dataSourceModel.inform = function inform() {
+    dataSourceModel.onChange.forEach((cb) => {cb()})
 };
 
 // Validation
 
-dataTypeModel.checkNameAsId = function(name) {
+dataSourceModel.checkNameAsId = function(name) {
     var validationResult = DataProcessorModel.checkName(name);
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dataSource has to be specified");
-        } else if (dataTypeModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
+        } else if (dataSourceModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
             validationResult =  new UniquenessConstrainViolation("There is already a data source called " + name)
         };
     };
@@ -106,4 +106,4 @@ dataTypeModel.checkNameAsId = function(name) {
 };
 
 
-module.exports = dataTypeModel;
+module.exports = dataSourceModel;
