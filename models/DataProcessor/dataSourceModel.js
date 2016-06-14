@@ -68,6 +68,12 @@ class dataSourceModel extends DataProcessorModel {
     static _save(dsModel) {
         db.dataSources.insert(dsModel);
     };
+
+    static getOne(query) {
+        //TODO: implement in datatype, AM and datasource
+    };
+
+
     static destroy(dsModelName){
         db.dataSources.remove({name: dsModelName});
         //TODO: remove the crappy elements array and replace hash map object

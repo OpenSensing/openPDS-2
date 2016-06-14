@@ -117,6 +117,16 @@ class dataTypeModel extends DataProcessorModel {
     static _save(dtModel) {
         db.dataTypes.insert(dtModel);
     };
+
+    static getOne(query) {
+        //TODO: implement in datatype, AM and datasource
+    };
+
+    static getAllforDataSource() {
+        //TODO
+    };
+
+
     static destroy(dtModelName){
         db.dataTypes.remove({name: dtModelName});
         //Below a crappy way of removing the Model by name from the elements array

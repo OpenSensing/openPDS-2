@@ -76,6 +76,11 @@ class answerModuleModel extends DataProcessorModel {
         db.answerModules.insert(amModel);
     };
 
+    static getOne(query) {
+        //TODO: implement in datatype, AM and datasource
+    };
+
+
     static destroy(amModelName){
         db.answerModules.remove({name: amModelName});
         //TODO: remove the crappy elements array with an aobject
