@@ -37,9 +37,11 @@ class dataSourceModel extends DataProcessorModel {
             newDataSource = null;
         }
         if (newDataSource) {
-            dataSourceModel.elements.push(newDataSource);
-            console.log('Created a data source object "' + initData.name + '"');
-            dataSourceModel.inform();
+            var newDataSourceName = newDataSource.name;
+            dataSourceModel.elements[newDataSourceName] = newDataSource;
+            console.log('Created a data source object "' + newDataSourceName + '"');
+            dataSourceModel.inform()
+            //TODO  promisify to remove taking the callback
             typeof(cb) == 'function' && cb(newDataSource);
         }
     };
@@ -76,21 +78,17 @@ class dataSourceModel extends DataProcessorModel {
 
     static destroy(dsModelName){
         db.dataSources.remove({name: dsModelName});
-        //TODO: remove the crappy elements array and replace hash map object
-        var  dsIndex;
-        this.elements.forEach((val, i) => {if(val.name == dsModelName) dsIndex = i;})
-        this.elements.splice(dsIndex, 1);
+ 
+        delete(this.elements[dsModelName]);
         this.inform();
         //TODO:  ensure cleaning up of the parser script, folder etc.
     };
     static destroyAll(){
 
     }
-    // TODO: check if it's the React way
-
 };
 
-dataSourceModel.elements = [];
+dataSourceModel.elements = {};
 dataSourceModel.onChange = [];
 dataSourceModel.inform = function inform() {
     dataSourceModel.onChange.forEach((cb) => {cb()})
@@ -103,7 +101,7 @@ dataSourceModel.checkNameAsId = function(name) {
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dataSource has to be specified");
-        } else if (dataSourceModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
+        } else if (dataSourceModel.elements[name]) {  // if datasource with the name already exists
             validationResult =  new UniquenessConstrainViolation("There is already a data source called " + name)
         };
     };

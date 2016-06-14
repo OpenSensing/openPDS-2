@@ -79,7 +79,8 @@ class dataTypeModel extends DataProcessorModel {
             newDataType = null;
         }
         if (newDataType) {
-            dataTypeModel.elements.push(newDataType);
+            var newDataTypeName = newDataType.name;
+            dataTypeModel.elements[newDataTypeName] = newDataType;
             dataTypeModel.inform();
             typeof(cb) == 'function' && cb(newDataType);
         }
@@ -129,22 +130,17 @@ class dataTypeModel extends DataProcessorModel {
 
     static destroy(dtModelName){
         db.dataTypes.remove({name: dtModelName});
-        //Below a crappy way of removing the Model by name from the elements array
-        //TODO: remove the crappy elements array and replace hash map object
-        var  dtIndex;
-        this.elements.forEach((val, i) => {if(val.name == dtModelName) dtIndex = i;})
-        this.elements.splice(dtIndex, 1);
+        
+        delete(this.elements[dtModelName]);
         this.inform();
         //TODO:  ensure cleaning up of the parser script, folder etc.
     };
     static destroyAll(){
         //TODO: destroy them all
     }
-    // TODO: check if it's the React way
-
 };
 
-dataTypeModel.elements = [];
+dataTypeModel.elements = {};
 dataTypeModel.onChange = [];
 dataTypeModel.inform = function inform() {
     dataTypeModel.onChange.forEach((cb) => {cb()});
@@ -155,7 +151,7 @@ dataTypeModel.checkNameAsId = function(name) {
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dataSource has to be specified");
-        } else if (dataTypeModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
+        } else if (dataTypeModel.elements[name]) {  // data type alredy exists?
             validationResult =  new UniquenessConstrainViolation("There is already a data type called " + name)
         };
     };

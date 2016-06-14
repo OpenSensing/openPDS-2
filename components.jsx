@@ -64,9 +64,10 @@ var CollapsibleList = React.createClass({
 
     render: function () {
 
-        var listElements = this.props.model.elements.map(function(object) {
-
-        //var listElements = this.state.elements.map(function(object) {
+        var elementKeys  = Object.keys(this.props.model.elements);
+        var self = this;
+        var listElements = elementKeys.map(function(key) {
+            var object = self.props.model.elements[key];
 
  //               console.log(object);
                 return (

@@ -41,7 +41,8 @@ class answerModuleModel extends DataProcessorModel {
             newAnswerModule = null;
         }
         if (newAnswerModule) {
-            answerModuleModel.elements.push(newAnswerModule);
+            var newAnswerModuleName = newAnswerModule.name;
+            answerModuleModel.elements[newAnswerModuleName] = newAnswerModule;
             console.log('Created an Answer Module object "' + initData.name + '"');
             answerModuleModel.inform();
 
@@ -83,10 +84,8 @@ class answerModuleModel extends DataProcessorModel {
 
     static destroy(amModelName){
         db.answerModules.remove({name: amModelName});
-        //TODO: remove the crappy elements array with an aobject
-        var  moduleIndex;
-        answerModuleModel.elements.forEach((val, i) => {if(val.name == amModelName) moduleIndex = i;})
-        answerModuleModel.elements.splice(moduleIndex, 1);
+
+        delete(this.elements[amModelName]);
         this.inform();
         //TODO:  ensure cleaning up of the AM script, folder etc.
     };
@@ -97,7 +96,7 @@ class answerModuleModel extends DataProcessorModel {
 
 };
 
-answerModuleModel.elements = [];
+answerModuleModel.elements = {};
 answerModuleModel.onChange = [];
 answerModuleModel.inform = function inform() {
     answerModuleModel.onChange.forEach((cb) => {cb()})
@@ -108,7 +107,7 @@ answerModuleModel.checkNameAsId = function(name) {
     if (validationResult instanceof NoConstraintViolation) {
         if (!name) {
             validationResult = new MandatoryValueConstraintViolation("Name of a registered dAnswer module has to be specified");
-        } else if (answerModuleModel.elements.filter((ds) => {if (ds.name == name) return true}).length > 0) {  // nasty way of checking element with given name alredy exists in the elements array
+        } else if (answerModuleModel.elements[name]) {  // element already exists?
             validationResult =  new UniquenessConstrainViolation("There is already an Answer Module called " + name)
         };
     };
