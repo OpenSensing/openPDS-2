@@ -2,9 +2,9 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var DataSources   = require('./models/DataProcessorModels/dataSourceModel'),
-    DataTypes     = require('./models/DataProcessorModels/dataTypeModel'),
-    AnswerModules = require('./models/DataProcessorModels/answerModuleModel');
+var DataSources   = require('./models/DataProcessor/dataSourceModel'),
+    DataTypes     = require('./models/DataProcessor/dataTypeModel'),
+    AnswerModules = require('./models/DataProcessor/answerModuleModel');
 
 var CollapsibleHeader = React.createClass({
     render: function () {
