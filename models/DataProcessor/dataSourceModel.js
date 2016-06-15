@@ -85,6 +85,10 @@ class dataSourceModel extends DataProcessorModel {
         return selection
     };
 
+    static getAll() {
+        return this.elements
+    }
+
 
     static destroy(dsModelName){
         db.dataSources.remove({name: dsModelName});
