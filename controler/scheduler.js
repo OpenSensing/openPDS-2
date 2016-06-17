@@ -13,6 +13,9 @@ var DataSources     = require("../models/DataProcessor/dataSourceModel"),
     AnswerModules   = require("../models/DataProcessor/answerModuleModel");
 
     //db              = process.mainModule.exports.db;
+
+var dataDbs = {};
+
 var data = {};
 
 
@@ -25,17 +28,20 @@ AnswerModules.loadAll();
 
 var Scheduler = {dataSources:{}, answerModules:{}};
 
-//TODO- think about registering callbacks or returning promisses than actuall datasource etc. objects
+//TODO- think about registering callbacks or returning promisses rather than actual datasource etc. objects
 // Schedule for data parsers
 
 DataSources.loadAll();
 DataTypes.loadAll();
 
 
+
+
+
+
+// load all data sources in to memrory
+
 var dSources = DataSources.getAll();
-
-
-
 
 for (var name in dSources) {
     let ds = dSources[name];
@@ -46,24 +52,39 @@ for (var name in dSources) {
     let dsDetails = {
 
     }
-
 }
 
 
 // Prepare input and output files
-function openDataTypesDBs (typeNames) {
-    var dTypes = DataTypes.get(typeNames);
+function getDataTypesDBs (typeNames) {
+    var dTypes = DataTypes.get(typeNames);  // load typ detalis from the model
     var dbs ={};
-
-    for (let dType in dTypes) {
+    for (let dType in dTypes) {            // for every type types
         dType =  dTypes[dType];
 
-        let dbPath = path.join(config.dataPath, 'answerModules', dType.dataSource, dType.cache_db_name);
-        dbs[dType.name] = new Datastore(dbPath, autoload: true)   ;
-    }
+        // open the db
+        if (dataDbs[dType.cache_db_name]) {  //if db already open just reference it
+            dbs[dType.name] = dataDbs[dType.cache_db_name]
+        } else {                              // else open it and put a reference to it in the dataDbs object
+            dbs[dType.name] = openDataDb(dType)
+        }
 
+    }
     return dbs
 }
+
+function openDataDb (dType) {
+
+    var dataSource, cache_db_name, name;
+    ({dataSource, cache_db_name, name} = dType);
+
+    var dbFolderPath = path.join(config.dataPath, 'dataSources', dataSource)
+    var dbPath       = path.join(dbFolderPath, cache_db_name);
+    dataDbs[dataTypeName] = new Datastore({filename: dbPath, autoload: true});   // open  the db and store it in the dataDBs obj
+
+    return dataDbs[name] //and return it
+}
+
 
 function openInputFile () {
 
